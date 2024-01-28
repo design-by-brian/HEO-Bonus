@@ -4,9 +4,11 @@ import math as m
 
 # Earth orbit parameters
 mu = 398600.4418
-r = 6781
+r = 6400 #6781
 D = 24*0.997269
 
+# Maths for getting orbit paths from tles
+# https://python.plainenglish.io/plot-satellites-real-time-orbits-with-python-s-matplotlib-3c7ccd737638
 def get_orbit(data):
     orbit_data = {'x': [], 'y': [], 'z': []}
     for i in range(len(data)//2):
@@ -27,3 +29,12 @@ def get_orbit(data):
             orbit_data['y'].append(P[1][0])
             orbit_data['z'].append(P[2][0])
     return orbit_data
+
+def plot_earth(fig):
+    uu, vv = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+    xx = r * np.cos(uu) * np.sin(vv)
+    yy = r * np.sin(uu) * np.sin(vv)
+    zz = r * np.cos(vv)
+
+    fig.add_surface(x=xx, y=yy, z=zz, showscale=False)
+    fig.update(layout_coloraxis_showscale=False)
