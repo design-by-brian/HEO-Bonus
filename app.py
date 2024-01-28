@@ -30,7 +30,7 @@ app = dash.Dash(external_stylesheets=[dbc.themes.LUX])
 server = app.server
 
 app.layout = html.Div([
-    html.H1(children='Historical Orbits for January', style={'textAlign':'center'}),
+    html.H1(children='Historical Orbits (ECEF) for January', style={'textAlign':'center'}),
     dcc.Dropdown(['Chinese Space Station - CSS', 'International Space Station - ISS'], 'Chinese Space Station - CSS', id='dropdown-selection'),
     dcc.Graph(id='graph-content')
 ])
@@ -41,7 +41,7 @@ app.layout = html.Div([
 )
 def update_graph(value):
     orbit_data = get_orbit(tle_df[value])
-    fig = px.line_3d(orbit_data, x="x", y="y", z="z", width=800, height=800)
+    fig = px.line_3d(orbit_data, x="x", y="y", z="z", width=800, height=800, labels={'x': 'x (km)', 'y': 'y (km)', 'z': 'z (km)'})
     fig.add_surface(x=xx, y=yy, z=zz, showscale=False)
     fig.update(layout_coloraxis_showscale=False)
     return fig
