@@ -30,4 +30,5 @@ def plot_tle(color):
     fig = px.line_3d(orbit_data, x="x", y="y", z="z", width=800, height=800)
     return fig
 
-app.run_server(debug=True)
+if __name__ == "__main__":
+    app.run_server(debug=False)
