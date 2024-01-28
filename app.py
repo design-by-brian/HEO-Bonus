@@ -8,6 +8,7 @@ with open('tianhe-tle-short.txt',"r") as f:
     tle = f.readlines()
 
 app = Dash(__name__)
+server = app.server
 
 app.layout = html.Div([
     html.H4('Historical orbits of ISS and Tiangong space stations.'),
