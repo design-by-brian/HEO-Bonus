@@ -1,49 +1,116 @@
+#AUTHOR: BRIAN SMITH
+#DATE:27/01/2023
+
 from dash import dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
-from orbit import get_orbit
+from orbit import get_orbit, plot_earth
 import pandas as pd
-import numpy as np
 import dash
 
-# Earth orbit parameters
-mu = 398600.4418
-r = 6500 #6781
-D = 24*0.997269
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "24rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
 
-uu, vv = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-xx = r * np.cos(uu) * np.sin(vv)
-yy = r * np.sin(uu) * np.sin(vv)
-zz = r * np.cos(vv)
 
-tianhe_tle = []
-with open('tianhe-tle.txt',"r") as f:
-    tianhe_tle = f.readlines()
+sidebar = html.Div(
+    [
+        html.H2("Filters"),
+        html.Hr(),
+        html.P(
+            "Select a station and month...", className="lead"
+        ),
+        dbc.Nav(
+            [
+                dcc.Dropdown(options=['Chinese Space Station - CSS', 'International Space Station - ISS'], 
+                             value='Chinese Space Station - CSS', id = 'station-selection'),
+                html.Br(),
+                dcc.Dropdown(options=['November 2023', 'December 2023', 'January 2024'], 
+                             value='January 2024', id='date-selection'),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+        html.Hr(),
+        html.P(
+            "Earth not to scale."
+        )
+    ],
+    style=SIDEBAR_STYLE,
+)
 
-ISS_tle = []
-with open('ISS-tle.txt', "r") as f:
-    ISS_tle = f.readlines()
+tle_list = []
 
-tle_df = pd.DataFrame({'Chinese Space Station - CSS': tianhe_tle, 'International Space Station - ISS': ISS_tle})
+with open('CSS-tle-nov.txt',"r") as f:
+    dict = {'Station': 'Chinese Space Station - CSS',
+            'Month': 'November 2023',
+            'TLE': f.readlines()}
+    tle_list.append(dict)
+
+with open('ISS-tle-nov.txt',"r") as f:
+    dict = {'Station': 'International Space Station - ISS',
+            'Month': 'November 2023',
+            'TLE': f.readlines()}
+    tle_list.append(dict)
+
+with open('CSS-tle-dec.txt',"r") as f:
+    dict = {'Station': 'Chinese Space Station - CSS',
+            'Month': 'December 2023',
+            'TLE': f.readlines()}
+    tle_list.append(dict)
+
+with open('ISS-tle-dec.txt', "r") as f:
+    dict = {'Station': 'International Space Station - ISS',
+            'Month': 'December 2023',
+            'TLE': f.readlines()}
+    tle_list.append(dict)
+
+with open('CSS-tle-jan.txt',"r") as f:
+    dict = {'Station': 'Chinese Space Station - CSS',
+            'Month': 'January 2024',
+            'TLE': f.readlines()}
+    tle_list.append(dict)
+
+with open('ISS-tle-jan.txt', "r") as f:
+    dict = {'Station': 'International Space Station - ISS',
+            'Month': 'January 2024',
+            'TLE': f.readlines()}
+    tle_list.append(dict)
+
+tle_df = pd.DataFrame(tle_list)
 
 app = dash.Dash(external_stylesheets=[dbc.themes.LUX])
 server = app.server
 
-app.layout = html.Div([
-    html.H1(children='Historical Orbits (ECEF) for January', style={'textAlign':'center'}),
-    dcc.Dropdown(['Chinese Space Station - CSS', 'International Space Station - ISS'], 'Chinese Space Station - CSS', id='dropdown-selection'),
-    dcc.Graph(id='graph-content')
-])
+app.layout = html.Div(children = [
+                dbc.Row([
+                    dbc.Col(),
+
+                    dbc.Col(html.H1('CSS and ISS Historical Orbits (ECEF)'),width = 9, style = {'margin-left':'7px','margin-top':'7px'})
+                    ]),
+                dbc.Row(
+                    [dbc.Col(sidebar),
+                    dbc.Col(dcc.Graph(id='graph-content'), width = 9, style = {'margin-left':'15px', 'margin-top':'7px', 'margin-right':'15px'})
+                    ])
+    ]
+)
 
 @app.callback(
     Output('graph-content', 'figure'),
-    Input('dropdown-selection', 'value')
+    Input('station-selection', 'value'),
+    Input('date-selection', 'value')
 )
-def update_graph(value):
-    orbit_data = get_orbit(tle_df[value])
-    fig = px.line_3d(orbit_data, x="x", y="y", z="z", width=800, height=800, labels={'x': 'x (km)', 'y': 'y (km)', 'z': 'z (km)'})
-    fig.add_surface(x=xx, y=yy, z=zz, showscale=False)
-    fig.update(layout_coloraxis_showscale=False)
+def update_graph(station, month):
+    df_row = tle_df.loc[(tle_df['Station']==station) & (tle_df['Month']==month)]
+    orbit_data = get_orbit(df_row['TLE'].values[0])
+    fig = px.line_3d(orbit_data, x="x", y="y", z="z", width=850, height=850, labels={'x': 'x (km)', 'y': 'y (km)', 'z': 'z (km)'})
+    plot_earth(fig=fig)
     return fig
 
 if __name__ == '__main__':
