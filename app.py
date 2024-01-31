@@ -47,37 +47,37 @@ sidebar = html.Div(
 
 tle_list = []
 
-with open('CSS-tle-nov.txt',"r") as f:
+with open('data/CSS-tle-nov.txt',"r") as f:
     dict = {'Station': 'Chinese Space Station - CSS',
             'Month': 'November 2023',
             'TLE': f.readlines()}
     tle_list.append(dict)
 
-with open('ISS-tle-nov.txt',"r") as f:
+with open('data/ISS-tle-nov.txt',"r") as f:
     dict = {'Station': 'International Space Station - ISS',
             'Month': 'November 2023',
             'TLE': f.readlines()}
     tle_list.append(dict)
 
-with open('CSS-tle-dec.txt',"r") as f:
+with open('data/CSS-tle-dec.txt',"r") as f:
     dict = {'Station': 'Chinese Space Station - CSS',
             'Month': 'December 2023',
             'TLE': f.readlines()}
     tle_list.append(dict)
 
-with open('ISS-tle-dec.txt', "r") as f:
+with open('data/ISS-tle-dec.txt', "r") as f:
     dict = {'Station': 'International Space Station - ISS',
             'Month': 'December 2023',
             'TLE': f.readlines()}
     tle_list.append(dict)
 
-with open('CSS-tle-jan.txt',"r") as f:
+with open('data/CSS-tle-jan.txt',"r") as f:
     dict = {'Station': 'Chinese Space Station - CSS',
             'Month': 'January 2024',
             'TLE': f.readlines()}
     tle_list.append(dict)
 
-with open('ISS-tle-jan.txt', "r") as f:
+with open('data/ISS-tle-jan.txt', "r") as f:
     dict = {'Station': 'International Space Station - ISS',
             'Month': 'January 2024',
             'TLE': f.readlines()}
