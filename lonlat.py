@@ -30,12 +30,11 @@ for minute in range(0, 100):
     positions['name'].append('ISS')
     positions['lat'].append(latDD)
     positions['lon'].append(lonDD)
-    
-    
 
 positions = pd.DataFrame(positions)
 
-fig = px.scatter_geo(positions,
+fig = px.scatter_geo(labels={'lat': 'Latitude'},
+                    data_frame=positions,
                     lat=positions['lat'],
                     lon=positions['lon'],
                     hover_name="name",
@@ -47,5 +46,14 @@ fig.add_scattergeo(name='Orbital Path',
                     lon=positions['lon'],
                     mode='lines',
                     opacity=0.5)
+
+citiesDF = pd.read_pickle('cities_pickle.pkl')
+fig.add_scattergeo(name='Cities',
+                    customdata=citiesDF,
+                    hovertext=citiesDF['city'],
+                    lat=citiesDF['lat'],
+                    lon=citiesDF['lng'],
+                    mode='markers',
+                    opacity=1)
 
 fig.show()
